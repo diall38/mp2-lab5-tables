@@ -38,7 +38,7 @@ TEST(unordered_table, can_insert) {
 	for (int i = 0; i < t1.size; ++i) 
 		EXPECT_EQ(t1.table[i] == t0.table[i], true);
 
-	ASSERT_ANY_THROW(t0.insert(c2.key, polynomial("3x^2+x+1")));
+	EXPECT_EQ(t0.insert(c2.key, polynomial("3x^2+x+1")), false);
 }
 
 TEST(unordered_table, can_find) {
@@ -64,7 +64,7 @@ TEST(unordered_table, can_erase) {
 	t0.erase(c2.key);
 	EXPECT_EQ(t2.size, t0.size);
 
-	ASSERT_ANY_THROW(t0.erase(c2.key));
+	EXPECT_EQ(t0.erase(c2.key), false);
 }
 
 TEST(unordered_table, can_get_size) {
@@ -130,7 +130,7 @@ TEST(ordered_table, can_insert) {
 	for (int i = 0; i < t1.size; ++i)
 		EXPECT_EQ(t1.table[i] == t0.table[i], true);
 
-	ASSERT_ANY_THROW(t0.insert(c2.key, polynomial("3x^2+x+1")));
+	EXPECT_EQ(t0.insert(c2.key, polynomial("3x^2+x+1")), false);
 }
 
 TEST(ordered_table, can_find) {
@@ -164,7 +164,7 @@ TEST(ordered_table, can_erase) {
 	t0.erase(c0.key);
 	EXPECT_EQ(t3.size, t0.size);
 
-	ASSERT_ANY_THROW(t0.erase(c2.key));
+	EXPECT_EQ(t0.erase(c2.key), false);
 }
 
 TEST(hash_table, can_create_hash_table) {
@@ -208,7 +208,7 @@ TEST(hash_table, can_insert) {
 	EXPECT_EQ(t1.find(c2.key) != nullptr, true);
 	EXPECT_EQ(t1.find(10) == nullptr, true);
 
-	ASSERT_ANY_THROW(t0.insert(c2.key, polynomial("3x^2+x+1")));
+	EXPECT_EQ(t0.insert(c2.key, polynomial("3x^2+x+1")), false);
 }
 
 
@@ -231,5 +231,5 @@ TEST(hash_table, can_erase) {
 	EXPECT_EQ(t0.find(c1.key) == nullptr, true);
 	EXPECT_EQ(t0.find(c0.key) == nullptr, true);
 
-	ASSERT_ANY_THROW(t0.erase(c2.key));
+	EXPECT_EQ(t0.erase(c2.key), false);
 }

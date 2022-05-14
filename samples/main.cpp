@@ -20,12 +20,10 @@ int main() {
 		" 4. Multiply a polynomial by a number\n" << \
 		" 5. Find the number of monomials in a polynomial\n" << \
 		" 6. Insert (new) polynomial with key to ordered, unordered and hash table\n" << \
-		" 7. Find (new) polynomial by the key in ordered, unordered and hash table\n" << \
-		" 8. Erase (new) polynomial by the key in ordered, unordered and hash table\n" << \
+		" 7. Find  polynomial by the key in ordered, unordered and hash table\n" << \
+		" 8. Erase polynomial by the key in ordered, unordered and hash table\n" << \
 		" 9. Insert resulting polynomial with key to ordered, unordered and hash table\n" << \
-		" 10. Find resulting polynomial by the key in ordered, unordered and hash table\n" << \
-		" 11. Erase resulting polynomial by the key in ordered, unordered and hash table\n" << \
-		" 12. Exit\n";
+		" 10. Exit\n";
 
 	int item;
 	std::cin >> item;
@@ -39,7 +37,7 @@ int main() {
 	std::ofstream out;
 	out.open("log.txt");
 
-	while (item != 12) {
+	while (item != 10) {
 		if (item == 1 || item == 2 || item == 3) {
 			std::cout << " Enter two polynomials:\n";
 
@@ -88,15 +86,16 @@ int main() {
 				std::cout << " Please, try again:\n";
 			}
 		}
-		if (item >= 6 && item <= 11) {
+		if (item >= 6 && item <= 9) {
 			try {
 				std::string s;
 				polynomial p;
-				if (item <= 8) {
+				if (item == 6) {
 					std::cout << "Enter polynomial\n";
 					std::cin >> s;
 					p = s;
 				}
+
 				std::cout << "Enter the name of the polynomial as a key\n";
 				size_t key;
 				std::cin >> key;
@@ -109,7 +108,13 @@ int main() {
 					out << " ****************\n";
 					out.close();
 
-					t1.insert(key, p);
+					while(t1.insert(key, p) != true) {
+						std::cout << "Insertion failed: key must be unique\n";
+						std::cout << " Please, try again:\n";
+
+						std::cout << "Enter the name of the polynomial as a key\n";
+						std::cin >> key;
+					}
 					t2.insert(key, p);
 					t3.insert(key, p);
 
@@ -123,14 +128,21 @@ int main() {
 					out << " ****************\n";
 					out.close();
 
-					t1.insert(key, last);
+					while (t1.insert(key, last) != true) {
+						std::cout << "Insertion failed: key must be unique\n";
+						std::cout << " Please, try again:\n";
+
+						std::cout << "Enter the name of the polynomial as a key\n";
+						std::cin >> key;
+					}
+
 					t2.insert(key, last);
 					t3.insert(key, last);
 
 					std::cout << "Your polynomial has been added to the tables\n";
 				}
 
-				if (item == 7 || item == 10) {
+				if (item == 7) {
 					std::ofstream out;
 					out.open("log.txt", std::ios::app);
 					out << "\n**************** Find of polynomial with key: " << key;
@@ -149,14 +161,20 @@ int main() {
 					}
 				}
 
-				if (item == 8 || item == 11) {
+				if (item == 8) {
 					std::ofstream out;
 					out.open("log.txt", std::ios::app);
 					out << "\n**************** Removal of polynomial with key: " << key;
 					out << " ****************\n";
 					out.close();
 
-					t1.erase(key);
+					while (t1.erase(key) != true) {
+						std::cout << "Failed: didn't find cell with this key\n";
+						std::cout << " Please, try again\n";
+						
+						std::cout << "Enter the name of the polynomial as a key\n";
+						std::cin >> key;
+					}
 					t2.erase(key);
 					t3.erase(key);
 

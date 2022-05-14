@@ -182,7 +182,8 @@ public:
 		}
 
 		void print() const {
-			if (multiplier < 0) std::cout << " - ";
+			if (multiplier < 0) 
+				std::cout << " - ";
 			//do not display 1 as a coefficient, only if degree == 0 (const)
 			if (abs(abs(multiplier) - 1) > 1e-10 || \
 				abs(abs(multiplier) - 1) < 1e-10 && degree == 0) std::cout << abs(multiplier);
@@ -231,7 +232,11 @@ public:
 		clear();
 	}
 
+	bool empty() const;
+
 	void print() const {
+		if (empty()) return;
+
 		auto it = polynom.begin();
 		(*it)->data.print();
 		++it;
@@ -245,6 +250,11 @@ public:
 	}
 
 	friend std::ostream& operator<<(std::ostream& out, const polynomial& p) {
+		if (p.empty()) {
+			out << '\n';
+			return out;
+		}
+
 		auto it = p.polynom.begin();
 		out << (*it)->data;
 		++it;
@@ -401,7 +411,6 @@ public:
 
 	void clear();
 
-	bool empty();
 
 	size_t get_count();
 };
@@ -573,7 +582,7 @@ polynomial& polynomial::operator=(const polynomial& p) {
 	return *this;
 }
 
-bool polynomial::empty() {
+bool polynomial::empty() const {
 	return polynom.size == 0;
 }
 

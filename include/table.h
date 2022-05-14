@@ -82,9 +82,9 @@ public:
 
 	virtual void clear() = 0;
 
-	virtual void erase(size_t _key) = 0;
+	virtual bool erase(size_t _key) = 0;
 	
-	virtual void insert(size_t _key, const T& _val) = 0;
+	virtual bool insert(size_t _key, const T& _val) = 0;
 
 	virtual _table_interface<T>::cell* find(size_t key) = 0;
 
@@ -114,8 +114,7 @@ public:
 		clear();
 	}
 
-
-	void insert(size_t key, const T& val) override {
+	bool insert(size_t key, const T& val) override {
 		if (find(key) == nullptr) {
 			table.push_back(t_cell<T>(key, val));
 			size++;
@@ -127,11 +126,12 @@ public:
 			out.close();
 			get_complexity_insert();
 #endif
+			return true;
 		}
-		else throw "Cell with this key is already exist\n";
+		else return false;
 	}
 
-	void erase(size_t key) override {
+	bool erase(size_t key) override {
 		bool deleted = false;
 #ifdef GET_COMPLEXITY
 		ops_erase = 0;
@@ -156,12 +156,11 @@ public:
 				out.close();
 				get_complexity_erase();
 #endif
-				return;
+				return true;
 			}
 		}
 
-		if (!deleted)
-			throw "Failed: didn't find cell with this key";
+		if (!deleted) return false;
 	}
 
 	t_cell<T>* find(size_t key) override {
@@ -275,7 +274,7 @@ public:
 		else return &(*it);
 	}
 
-	void insert(size_t _key, const T& _value) override {
+	bool insert(size_t _key, const T& _value) override {
 		//binary_search
 		auto it = std::lower_bound(table.begin(), table.end(), t_cell<T>(_key, T()),
 			[](const t_cell<T>& first, const t_cell<T>& second) {
@@ -283,13 +282,12 @@ public:
 		});
 
 		if (it != table.end() && it->key == _key)
-			throw "Insertion failed: key must be unique";
+			return false;
 
 		size_t pos = it - table.begin();
 
 		table.emplace_back(t_cell<T>({ _key, _value }));
 		size++;
-
 
 		for (int i = size - 1; i > pos; --i) 
 			std::swap(table[i], table[i - 1]);
@@ -309,18 +307,18 @@ public:
 		out.close();
 		get_complexity_insert();
 #endif
+		return true;
 	}
 
-
-	void erase(size_t key) override {
+	bool erase(size_t key) override {
 		auto it = find(key);
 
 		if (it != nullptr) {
 			int pos = it - &table[0];
 
-			for (int i = pos; i < size - 1; ++i) 
+			for (int i = pos; i < size - 1; ++i)
 				std::swap(table[i], table[i + 1]);
-			
+
 			table.pop_back();
 
 #ifdef GET_COMPLEXITY
@@ -333,14 +331,13 @@ public:
 			out.open("log.txt", std::ios::app);
 			out << "\nORDERED TABLE";
 			out.close();
-
 			get_complexity_erase();
 #endif
-
 		}
-		else 
-			throw "failed: didn't find element with this key";
+		else return false;
+
 		size--;
+		return true;
 	}
 
 	T& operator[](size_t _key) {
@@ -441,11 +438,11 @@ public:
 		return nullptr;
 	}
 
-	void insert(size_t _key, const T& _val) override {
+	bool insert(size_t _key, const T& _val) override {
 		auto it = find(_key);
 
 		if (it != nullptr)
-			throw "Insertion failed: key must be unique";
+			return false;
 		
 		size_t hash = hash_function(_key);
 
@@ -461,9 +458,10 @@ public:
 		out.close();
 		get_complexity_insert();
 #endif
+		return true;
 	}
 
-	void erase(size_t _key) override {
+	bool erase(size_t _key) override {
 		typename List<t_cell<T>>::iterator t = NULL;
 		bool f = 0;
 
@@ -483,8 +481,7 @@ public:
 			else t = it->next;
 		}
 
-		if (f == 0)
-			throw "Erase failed: didn't find cell with this key";
+		if (f == 0) return false;
 
 		table[hash].erase(*t);
 		size--;
@@ -497,6 +494,8 @@ public:
 		out.close();
 		get_complexity_erase();
 #endif
+
+		return true;
 	}
 
 	T& operator[](size_t _key) {
@@ -506,5 +505,4 @@ public:
 			return (*ptr).value;
 		else throw "Incorrect access by key to a table cell\n";
 	}
-
 };
